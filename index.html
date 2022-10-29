@@ -95,15 +95,15 @@
 
             <div class="w-full max-w-sm mx-auto mt-6 bg-transparent border rounded-global dark:border-gray-700 xl:max-w-md">
 
-                <form class="flex flex-col md:flex-row">
+                <div class="flex flex-col md:flex-row">
 
-                  <input class="flex-1 h-10 px-4 py-2 m-1 placeholder-gray-400 bg-transparent border-none appearance-none focus:outline-none focus:placeholder-transparent focus:ring-0" id="cnpj" placeholder="Insira o CNPJ "/>
+                    <input class="flex-1 h-10 px-4 py-2 m-1 placeholder-gray-400 bg-transparent border-none appearance-none focus:outline-none focus:placeholder-transparent focus:ring-0" id="cnpj" placeholder="Insira o CNPJ "/>
 
                     <button id="consulta" class="h-10 px-4 py-2 m-1 text-white transition-colors duration-200 transform bg-primary-500 rounded-global hover:bg-primary-300 focus:outline-none focus:bg-blue-400">
                         Consultar
                     </button>
 
-                </form>
+                </div>
 
             </div>
 
@@ -113,15 +113,13 @@
 
 </section>
 
-<section>
+<section class="hidden" id="section">
 
-  <div class="container px-6 py-16 mx-auto text-center md:py-20 xl:py-28 hidden">
+  <div class="container px-6 py-16 mx-auto text-center md:py-20 xl:py-28">
 
         <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
 
-          <div id="result">
-
-
+          <div id="resultado">
           </div>
 
         </div>

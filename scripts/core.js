@@ -19,7 +19,7 @@
         }
 
         if (!httpRequest) {
-            alert('Giving up :( Cannot create an XMLHTTP instance');
+            alert('Não foi possível completar a requisição.');
             return false;
         }
         httpRequest.onreadystatechange = alertContents;
@@ -30,9 +30,15 @@
     function alertContents() {
         if (httpRequest.readyState === 4) {
             if (httpRequest.status === 200) {
-                alert(httpRequest.responseText);
+                const element = document.getElementById("section");
+                element.classList.remove("hidden");
+
+                const div = document.getElementById("resultado");
+
+                div.innerHTML = '';
+                div.innerHTML = httpRequest.responseText;
             } else {
-                alert('There was a problem with the request.');
+                alert('Não foi possível completar a requisição. Verifique o CNPJ e tente novamente.');
             }
         }
     }
