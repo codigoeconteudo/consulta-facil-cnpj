@@ -33,10 +33,15 @@
                 const element = document.getElementById("section");
                 element.classList.remove("hidden");
 
-                const div = document.getElementById("resultado");
+                const response = JSON.parse(httpRequest.responseText);
 
-                div.innerHTML = '';
-                div.innerHTML = httpRequest.responseText;
+                document.getElementById("cnpj").innerText = document.getElementById('cnpj').value;
+                document.getElementById("razao_social").innerText = response.razao_social;
+                document.getElementById("nome_fantasia").innerText = response.nome_fantasia;
+                document.getElementById("situacao").innerText = response.situacao;
+                document.getElementById("data_situacao").innerText = response.data_situacao;
+
+
             } else {
                 alert('Não foi possível completar a requisição. Verifique o CNPJ e tente novamente.');
             }

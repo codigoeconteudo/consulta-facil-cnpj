@@ -12,11 +12,13 @@
 
     <meta name="description" content="undefined"/>
 
-    <link rel="icon" type="image/x-icon" href="https://ik.imagekit.io/n0uvizrukm2/websites/chai-cloud/Vector__2__H9Chm1ngK.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
 
     <meta property="og:title" content="Consulta Fácil CNPJ"/>
 
-    <meta property="og:image" content=""/>
+    <meta property="og:description" content="Consulta CNPJs de modo simples e rápido."/>
+
+    <meta property="og:image" content="media/cover.png"/>
 
     <link id="heading-font" rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" media="all"/>
 
@@ -40,7 +42,7 @@
 
         <div class="flex items-center justify-start h-full pr-4 md:w-2/3 md:justify-center md:pr-0">
             <a class="py-4 flex md:py-0" href="/">
-              <h1 class="text-2xl font-bold tracking-tighter text-primary-500">Consulta Fácil CNPJ</h1>
+                <img style="width: 260px" src="media/logo.png" alt="Consulta Fácil CNPJ"/>
             </a>
         </div>
 
@@ -65,18 +67,6 @@
 
             </div>
 
-            <ul class="absolute text-gray-900 mt-2 origin-top-right divide-y divide-gray-100 shadow-lg left-px right-px pl-2 pt-5 pb-4 bg-white dark:bg-black dark:text-slate-100 dark:divide-gray-700 dark:shadow-gray-800" x-show="dynamic === &#x27;_menO&#x27;">
-
-                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Intro</a></li>
-
-                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Features</a></li>
-
-                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Login</a></li>
-
-                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Sign Up</a></li>
-
-            </ul>
-
         </div>
 
     </div>
@@ -99,7 +89,7 @@
 
                     <input class="flex-1 h-10 px-4 py-2 m-1 placeholder-gray-400 bg-transparent border-none appearance-none focus:outline-none focus:placeholder-transparent focus:ring-0" id="cnpj" placeholder="Insira o CNPJ "/>
 
-                    <button id="consulta" class="h-10 px-4 py-2 m-1 text-white transition-colors duration-200 transform bg-primary-500 rounded-global hover:bg-primary-300 focus:outline-none focus:bg-blue-400">
+                    <button id="consulta" class="h-10 px-4 py-2 m-1 text-white transition-colors duration-200 transform bg-primary-500 rounded-global hover:bg-primary-300 focus:outline-none focus:bg-primary-400">
                         Consultar
                     </button>
 
@@ -115,11 +105,59 @@
 
 <section class="hidden" id="section">
 
-  <div class="container px-6 py-16 mx-auto text-center md:py-20 xl:py-28">
+  <div class="container px-6 py-8 mx-auto text-center md:py-10 xl:py-18">
 
         <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
 
           <div id="resultado">
+
+              <p>
+                    CNPJ: <span id="cnpj"></span>
+                  <br>
+                    Razão Social: <span id="razao_social"></span>
+                  <br>
+                    Nome Fantasia: <span id="nome_fantasia"></span>
+                  <br>
+                    Data de Abertura: <span id="abertura"></span>
+                  <br>
+                    Natureza Jurídica: <span id="natureza"></span>
+                  <br>
+                    Tipo: <span id="tipo"></span>
+                  <br>
+                    Situação: <span id="situacao"></span>
+                  <br>
+                    Capital Social: <span id="capital"></span>
+                  <br>
+                    Porte: <span id="porte"></span>
+                  <br>
+                    Atividade Principal: <span id="atividade"></span>
+                  <br>
+                    Atividades Secundárias: <span id="secundarias"></span>
+                  <br>
+                    CEP: <span id="cep"></span>
+                  <br>
+                    Logradouro: <span id="logradouro"></span>
+                  <br>
+                    Número: <span id="numero"></span>
+                  <br>
+                    Complemento: <span id="complemento"></span>
+                  <br>
+                    Bairro: <span id="bairro"></span>
+                  <br>
+                    Município: <span id="municipio"></span>
+                  <br>
+                    UF: <span id="uf"></span>
+                  <br>
+                    Telefone: <span id="telefone"></span>
+                  <br>
+                    Email: <span id="email"></span>
+                  <br>
+                    Situação Especial: <span id="especial"></span>
+                  <br>
+                    Data Situação Especial: <span id="data"></span>
+                  <br>
+              </p>
+
           </div>
 
         </div>
