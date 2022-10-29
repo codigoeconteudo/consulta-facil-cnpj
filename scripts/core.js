@@ -1,7 +1,7 @@
 (function () {
     let httpRequest;
     document.getElementById("consulta").onclick = function () {
-        makeRequest('https://minhareceita.org/' + document.getElementById('cnpj').value);
+        makeRequest('https://minhareceita.org/' + document.getElementById('cnpj_input').value);
     };
 
     function makeRequest(url) {
@@ -35,11 +35,10 @@
 
                 const response = JSON.parse(httpRequest.responseText);
 
-                document.getElementById("cnpj").innerText = document.getElementById('cnpj').value;
+                document.getElementById("cnpj").innerText = response.cnpj;
                 document.getElementById("razao_social").innerText = response.razao_social;
                 document.getElementById("nome_fantasia").innerText = response.nome_fantasia;
-                document.getElementById("situacao").innerText = response.situacao;
-                document.getElementById("data_situacao").innerText = response.data_situacao;
+
 
 
             } else {

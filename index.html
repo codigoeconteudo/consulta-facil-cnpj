@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 
-<html class="scroll-smooth" x-init="$watch('darkMode', val => localStorage.setItem('dark', val))" x-data="{darkMode: localStorage.dark === 'true' || (!('dark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches), dialogPanels: []}" class="darkMode ? '' : ''" lang='en'>
+<html class="scroll-smooth" x-init="$watch('darkMode', val => localStorage.setItem('dark', val))"
+      x-data="{darkMode: localStorage.dark === 'true' || (!('dark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches), dialogPanels: []}"
+      class="darkMode ? '' : ''" lang='en'>
 
 <head>
 
@@ -20,7 +22,11 @@
 
     <meta property="og:image" content="media/cover.png"/>
 
-    <link id="heading-font" rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" media="all"/>
+    <link id="heading-font" rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap"
+          media="all"/>
+
+    <link rel="stylesheet" href="https://unpkg.com/flowbite@1.5.3/dist/flowbite.min.css" />
 
     <link rel="stylesheet" href="styles/tailwind.css"/>
 
@@ -47,7 +53,8 @@
         </div>
 
         <div class="items-start justify-center w-full space-x-6 text-center text-sm hidden md:w-2/3 md:mt-0 md:flex-row md:items-center md:flex md:justify-end lg:space-x-8">
-            <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 lg:mx-3 md:text-center" href="/">Entrar em Contato</a>
+            <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 lg:mx-3 md:text-center"
+               href="/">Entrar em Contato</a>
         </div>
 
     </div>
@@ -60,17 +67,21 @@
 
         <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
 
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-white md:text-4xl xl:text-5xl">Consulta CNPJs de modo simples e rápido.</h1>
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white md:text-4xl xl:text-5xl">Consulta CNPJs de modo
+                simples e rápido.</h1>
 
-            <p class="mt-6 xl:max-w-lg xl:mx-auto">Aqui você pode consultar informações do Cadastro Nacional de Pessoas Jurídicas direto da base governamental, gratuitamente e de modo simples e rápido.</p>
+            <p class="mt-6 xl:max-w-lg xl:mx-auto">Aqui você pode consultar informações do Cadastro Nacional de Pessoas
+                Jurídicas direto da base governamental, gratuitamente e de modo simples e rápido.</p>
 
             <div class="w-full max-w-sm mx-auto mt-6 bg-transparent border rounded-global dark:border-gray-700 xl:max-w-md">
 
                 <div class="flex flex-col md:flex-row">
 
-                    <input class="flex-1 h-10 px-4 py-2 m-1 placeholder-gray-400 bg-transparent border-none appearance-none focus:outline-none focus:placeholder-transparent focus:ring-0" id="cnpj" placeholder="Insira o CNPJ "/>
+                    <input class="flex-1 h-10 px-4 py-2 m-1 placeholder-gray-400 bg-transparent border-none appearance-none focus:outline-none focus:placeholder-transparent focus:ring-0"
+                           id="cnpj_input" placeholder="Insira o CNPJ "/>
 
-                    <button id="consulta" class="h-10 px-4 py-2 m-1 text-white transition-colors duration-200 transform bg-primary-500 rounded-global hover:bg-primary-300 focus:outline-none focus:bg-primary-400">
+                    <button id="consulta"
+                            class="h-10 px-4 py-2 m-1 text-white transition-colors duration-200 transform bg-primary-500 rounded-global hover:bg-primary-300 focus:outline-none focus:bg-primary-400">
                         Consultar
                     </button>
 
@@ -86,64 +97,114 @@
 
 <section class="hidden" id="section">
 
-  <div class="container px-6 py-8 mx-auto text-center md:py-10 xl:py-18">
+    <div class="container px-6 py-8 mx-auto text-center md:py-10 xl:py-18">
 
         <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
 
-          <div id="resultado">
+            <div id="resultado">
 
-              <p>
-                    CNPJ: <span id="cnpj"></span>
-                  <br>
-                    Razão Social: <span id="razao_social"></span>
-                  <br>
-                    Nome Fantasia: <span id="nome_fantasia"></span>
-                  <br>
-                    Data de Abertura: <span id="abertura"></span>
-                  <br>
-                    Natureza Jurídica: <span id="natureza"></span>
-                  <br>
-                    Tipo: <span id="tipo"></span>
-                  <br>
-                    Situação: <span id="situacao"></span>
-                  <br>
-                    Capital Social: <span id="capital"></span>
-                  <br>
-                    Porte: <span id="porte"></span>
-                  <br>
-                    Atividade Principal: <span id="atividade"></span>
-                  <br>
-                    Atividades Secundárias: <span id="secundarias"></span>
-                  <br>
-                    CEP: <span id="cep"></span>
-                  <br>
-                    Logradouro: <span id="logradouro"></span>
-                  <br>
-                    Número: <span id="numero"></span>
-                  <br>
-                    Complemento: <span id="complemento"></span>
-                  <br>
-                    Bairro: <span id="bairro"></span>
-                  <br>
-                    Município: <span id="municipio"></span>
-                  <br>
-                    UF: <span id="uf"></span>
-                  <br>
-                    Telefone: <span id="telefone"></span>
-                  <br>
-                    Email: <span id="email"></span>
-                  <br>
-                    Situação Especial: <span id="especial"></span>
-                  <br>
-                    Data Situação Especial: <span id="data"></span>
-                  <br>
-              </p>
+                <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
 
-          </div>
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+
+                        <thead class="text-xs text-white uppercase bg-primary-500 dark:bg-gray-700 dark:text-gray-400">
+
+                            <tr>
+                                <th scope="col" class="py-3 px-6">
+                                    Item
+                                </th>
+                                <th scope="col" class="py-3 px-6">
+                                    Valor
+                                </th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+
+                                <td class="py-4 px-6 font-bold">
+                                    CNPJ
+                                </td>
+
+                                <td class="py-4 px-6">
+                                    <span id="cnpj"></span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+
+                                <td class="py-4 px-6 font-bold">
+                                    Razão Social
+                                </td>
+
+                                <td class="py-4 px-6">
+                                    <span id="razao_social"></span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+
+                                <td class="py-4 px-6 font-bold">
+                                    Nome Fantasia
+                                </td>
+
+                                <td class="py-4 px-6">
+                                    <span id="nome_fantasia"></span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+
+                                <td class="py-4 px-6 font-bold">
+                                    Situação
+                                </td>
+
+                                <td class="py-4 px-6">
+                                    <span id="situacao"></span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+
+                                <td class="py-4 px-6 font-bold">
+                                    Data de Abertura
+                                </td>
+
+                                <td class="py-4 px-6">
+                                    <span id="data_abertura"></span>
+                                </td>
+
+                            </tr>
+
+                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+
+                                <td class="py-4 px-6 font-bold">
+                                    Tipo
+                                </td>
+
+                                <td class="py-4 px-6">
+                                    <span id="tipo"></span>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
 
         </div>
 
-  </div>
+    </div>
 
 </section>
 
@@ -166,6 +227,8 @@
     </div>
 
 </div>
+
+<script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
 
 <script defer src="libraries/alpinejs/alpine.js"></script>
 
