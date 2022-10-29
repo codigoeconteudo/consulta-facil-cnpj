@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" x-init="$watch('darkMode', val => localStorage.setItem('dark', val))" x-data="{darkMode: localStorage.dark === 'true' || (!('dark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches), dialogPanels: []}" class="darkMode ? '' : ''" lang='en'>
+
+<head>
+
+    <meta charset="UTF-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Consulta Fácil CNPJ</title>
+
+    <meta name="description" content="undefined"/>
+
+    <link rel="icon" type="image/x-icon" href="https://ik.imagekit.io/n0uvizrukm2/websites/chai-cloud/Vector__2__H9Chm1ngK.svg">
+
+    <meta property="og:title" content="Consulta Fácil CNPJ"/>
+
+    <meta property="og:image" content=""/>
+
+    <link id="heading-font" rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap" media="all"/>
+
+    <link rel="stylesheet" href="styles/tailwind.css"/>
+
+    <link rel="stylesheet" href="libraries/aos/aos.css"/>
+</head>
+
+<body class="font-body antialiased text-[#000000] bg-[#fcfcfc] dark:text-[#ffffff] dark:bg-[#031022]">
+
+<section class="w-full shadow dark:shadow-slate-800">
+
+    <div class="container flex items-center justify-between mx-auto overflow-hidden font-medium max-w-7xl h-16 px-4 md:overflow-visible md:flex-row md:justify-around lg:justify-center">
+
+        <div class="items-start justify-center w-full space-x-6 text-center text-sm hidden md:w-2/3 md:mt-0 md:flex-row md:items-center md:flex md:justify-start lg:space-x-8">
+
+            <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 md:text-center md:text-primary-500 lg:mx-3"
+               href="/">Página Inicial</a>
+
+        </div>
+
+        <div class="flex items-center justify-start h-full pr-4 md:w-2/3 md:justify-center md:pr-0">
+            <a class="py-4 flex md:py-0" href="/">
+              <h1 class="text-2xl font-bold tracking-tighter text-primary-500">Consulta Fácil CNPJ</h1>
+            </a>
+        </div>
+
+        <div class="items-start justify-center w-full space-x-6 text-center text-sm hidden md:w-2/3 md:mt-0 md:flex-row md:items-center md:flex md:justify-end lg:space-x-8">
+            <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 lg:mx-3 md:text-center" href="/">Entrar em Contato</a>
+        </div>
+
+        <div x-data="{dynamic: &#x27;&#x27;}" class="md:hidden">
+
+            <div class="" x-on:click="dynamic = !dynamic ? &#x27;_menO&#x27;: &#x27;&#x27;">
+
+              <span class="w-full text-3xl md:hidden">
+
+                <svg class="w-full text-3xl md:hidden" stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+
+              </span>
+
+            </div>
+
+            <ul class="absolute text-gray-900 mt-2 origin-top-right divide-y divide-gray-100 shadow-lg left-px right-px pl-2 pt-5 pb-4 bg-white dark:bg-black dark:text-slate-100 dark:divide-gray-700 dark:shadow-gray-800" x-show="dynamic === &#x27;_menO&#x27;">
+
+                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Intro</a></li>
+
+                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Features</a></li>
+
+                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Login</a></li>
+
+                <li class="group flex items-center w-full px-2 py-2 text-sm" x-on:click="dynamic = &#x27;&#x27;"><a href="#">Sign Up</a></li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="">
+
+    <div class="container px-6 py-16 mx-auto text-center md:py-20 xl:py-28">
+
+        <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
+
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white md:text-4xl xl:text-5xl">Consulta CNPJs de modo simples e rápido.</h1>
+
+            <p class="mt-6 xl:max-w-lg xl:mx-auto">Aqui você pode consultar informações do Cadastro Nacional de Pessoas Jurídicas direto da base governamental, gratuitamente e de modo simples e rápido.</p>
+
+            <div class="w-full max-w-sm mx-auto mt-6 bg-transparent border rounded-global dark:border-gray-700 xl:max-w-md">
+
+                <form class="flex flex-col md:flex-row">
+
+                  <input class="flex-1 h-10 px-4 py-2 m-1 placeholder-gray-400 bg-transparent border-none appearance-none focus:outline-none focus:placeholder-transparent focus:ring-0" id="cnpj" placeholder="Insira o CNPJ "/>
+
+                    <button id="consulta" class="h-10 px-4 py-2 m-1 text-white transition-colors duration-200 transform bg-primary-500 rounded-global hover:bg-primary-300 focus:outline-none focus:bg-blue-400">
+                        Consultar
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section>
+
+  <div class="container px-6 py-16 mx-auto text-center md:py-20 xl:py-28 hidden">
+
+        <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
+
+          <div id="result">
+
+
+          </div>
+
+        </div>
+
+  </div>
+
+</section>
+
+<div class="">
+
+    <div class="py-16 text-center max-w-7xl mx-auto">
+
+        <h1 class="text-4sm font-semibold">Código e Conteúdo</h1>
+
+        <p class="w-4/5 mx-auto my-4 md:w-3/5 lg:w-2/5">Espaço de desenvolvimento e tecnologia.</p>
+
+    </div>
+
+    <div class="text-center py-1 max-w-7xl mx-auto border-t border-gray-200 dark:border-gray-600">
+
+        <p class="w-4/5 mx-auto my-5 text-sm leading-5"> @ 2022, Código e Conteúdo. Todos os Direitos Reservados.</p>
+
+        <p class="w-4/5 mx-auto my-5 text-sm leading-5"><a class="" href="#">Acordos Legais e Thirdy Part.</a></p>
+
+    </div>
+
+</div>
+
+<script defer src="libraries/alpinejs/alpine.js"></script>
+
+<script src="libraries/aos/aos.js"></script>
+
+<script>
+    AOS.init({
+        offset: 50,
+        duration: 800
+    });
+</script>
+
+<script src="scripts/core.js"></script>
+
+</body>
+
+</html>
