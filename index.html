@@ -1,379 +1,229 @@
 <!DOCTYPE html>
-
-<html class="scroll-smooth" x-init="$watch('darkMode', val => localStorage.setItem('dark', val))"
-      x-data="{darkMode: localStorage.dark === 'true' || (!('dark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches), dialogPanels: []}"
-      class="darkMode ? '' : ''" lang='en'>
-
+<html lang="pt-br" x-data="{ resultado: null, carregando: false, erro: '', showSection: false }">
 <head>
-
-    <meta charset="UTF-8"/>
-
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Consulta Fácil CNPJ</title>
-
-    <meta name="description" content="Consulta CNPJs de modo simples e rápido."/>
-      
-    <meta name="author" content="Gabriel Souza (@gsdesenvolvedor)"/>
-
     <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="stylesheet" href="libraries/flowbite/flowbite.css" />
+    <link rel="stylesheet" href="styles/tailwind.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script defer src="libraries/alpinejs/alpine.js"></script>
+</head>
+<body class="bg-[#fcfcfc] dark:bg-[#031022] text-[#000000] dark:text-[#ffffff] font-body antialiased">
 
-    <meta property="og:title" content="Consulta Fácil CNPJ"/>
+    <section class="w-full shadow dark:shadow-slate-800">
 
-    <meta property="og:description" content="Consulta CNPJs de modo simples e rápido."/>
+        <div class="container flex items-center justify-between mx-auto overflow-hidden font-medium max-w-7xl h-16 px-4 md:overflow-visible md:flex-row md:justify-around lg:justify-center">
 
-    <meta property="og:image" content="media/cover.png"/>
+            <div class="items-start justify-center w-full space-x-6 text-center text-sm hidden md:w-2/3 md:mt-0 md:flex-row md:items-center md:flex md:justify-start lg:space-x-8">
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DHRHTW72BV"></script>
+                <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 md:text-center md:text-primary-500 lg:mx-3"
+                   href="index.html">Página Inicial</a>
+
+            </div>
+
+            <div class="flex items-center justify-start h-full pr-4 md:w-2/3 md:justify-center md:pr-0">
+                <a class="py-4 flex md:py-0" href="/">
+                    <img style="width: 260px" src="media/logo.png" alt="Consulta Fácil CNPJ"/>
+                </a>
+            </div>
+
+            <div class="items-start justify-center w-full space-x-6 text-center text-sm hidden md:w-2/3 md:mt-0 md:flex-row md:items-center md:flex md:justify-end lg:space-x-8">
+                <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 lg:mx-3 md:text-center"
+                   href="mailto:contato@codigoeconteudo.com.br">Entrar em Contato</a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="container mx-auto py-16 px-4 text-center">
+        <h1 class="text-3xl font-bold md:text-4xl">Consulta CNPJs de modo simples e rápido.</h1>
+        <p class="mt-4">Consulte informações do Cadastro Nacional de Pessoas Jurídicas direto da base governamental.</p>
+        <form class="flex flex-col md:flex-row mt-8 justify-center gap-3 items-center w-full max-w-lg mx-auto"
+              @submit.prevent="consultarCNPJ()">
+            <input
+                type="text"
+                id="cnpj_input"
+                placeholder="Insira o CNPJ"
+                maxlength="18"
+                class="flex-1 px-4 py-2 rounded border border-gray-300 shadow focus:outline-none focus:ring focus:border-primary-500"
+                x-ref="inputCNPJ"
+                :disabled="carregando"
+                required
+            >
+            <button
+                type="submit"
+                class="px-6 py-2 h-10 text-white rounded bg-primary-500 hover:bg-primary-400 font-semibold transition"
+                :disabled="carregando"
+            >
+                <template x-if="!carregando">Consultar</template>
+                <template x-if="carregando"><svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg></template>
+            </button>
+        </form>
+    </section>
+    
+    <section 
+        x-show="showSection"
+        x-transition
+        id="section"
+        class="container mx-auto px-4 pb-20"
+        style="display:none"
+    >
+        <template x-if="erro">
+            <div class="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded max-w-lg mx-auto mb-4" role="alert"
+            x-text="erro"></div>
+        </template>
+        
+        <div x-show="resultado" class="bg-white dark:bg-gray-900 rounded shadow p-6 max-w-2xl mx-auto">
+            <h2 class="text-lg font-bold text-primary-500 mb-4">Resultados da Consulta</h2>
+            
+            <!-- Botões de ação -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button class="bg-primary-500 hover:bg-primary-400 text-white px-4 py-2 rounded text-sm font-semibold"
+                        @click="window.print()">Imprimir</button>
+                <button class="bg-pink-500 hover:bg-pink-400 text-white px-4 py-2 rounded text-sm font-semibold"
+                        @click="gerarPDF()">Salvar PDF</button>
+                <a :href="'https://api.minhareceita.org/v1/cnpj/' + resultado.cnpj.replace(/\D/g, '')"
+                   class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded text-sm font-semibold"
+                   target="_blank">Ver API</a>
+            </div>
+            
+            <!-- Lista responsiva -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
+                <template x-for="(valor, chave) in dadosFormatados()" :key="chave">
+                    <div class="flex flex-col border border-gray-100 dark:border-gray-800 rounded p-3 bg-gray-50 dark:bg-gray-800 mb-1">
+                        <span class="text-xs uppercase font-semibold text-gray-500" x-text="chave"></span>
+                        <span class="font-medium text-gray-900 dark:text-gray-100" x-text="valor"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
 
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        function formatoCNPJ(cnpj) {
+            if (!cnpj) return '';
+            return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+        }
 
-      gtag('config', 'G-DHRHTW72BV');
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('consultarCNPJ', () => ({
+                resultado: null,
+                carregando: false,
+                erro: '',
+                showSection: false,
+                async consultarCNPJ() {
+                    this.erro = '';
+                    this.showSection = true;
+                    this.carregando = true;
+                    const cnpjBruto = this.$refs.inputCNPJ.value.replace(/\D/g, '');
+                    if (cnpjBruto.length !== 14) {
+                        this.erro = "Digite um CNPJ válido com 14 dígitos.";
+                        this.resultado = null;
+                        this.carregando = false;
+                        return;
+                    }
+                    try {
+                        let dados = await fetch(`https://api.minhareceita.org/v1/cnpj/${cnpjBruto}`);
+                        if (!dados.ok) throw new Error('CNPJ não encontrado na base');
+                        dados = await dados.json();
+                        if (dados.status !== 'OK') throw new Error('CNPJ não localizado: ' + (dados.message || 'Desconhecido'));
+                        this.resultado = dados;
+                    } catch (e) {
+                        this.resultado = null;
+                        this.erro = e.message;
+                    }
+                    this.carregando = false;
+                },
+                dadosFormatados() {
+                    if (!this.resultado) return {};
+                    // Adapte aqui para os campos que quiser exibir:
+                    return {
+                        "CNPJ": formatoCNPJ(this.resultado.cnpj),
+                        "Razão Social": this.resultado.razao_social || '',
+                        "Nome Fantasia": this.resultado.nome_fantasia || '',
+                        "Status Cadastral": this.resultado.descricao_situacao_cadastral || '',
+                        "Data Abertura": (this.resultado.data_abertura ? new Date(this.resultado.data_abertura).toLocaleDateString() : ''),
+                        "Natureza Jurídica": this.resultado.natureza_juridica && this.resultado.natureza_juridica.descricao ? this.resultado.natureza_juridica.descricao : '',
+                        "Porte": this.resultado.porte || '',
+                        "Capital Social": this.resultado.capital_social ? `R$ ${Number(this.resultado.capital_social).toLocaleString('pt-br', {minimumFractionDigits: 2})}` : '',
+                        "CNAE Principal": this.resultado.cnae_fiscal_descricao || '',
+                        "Logradouro": this.resultado.descricao_tipo_de_logradouro + " " + this.resultado.logradouro || '',
+                        "Número": this.resultado.numero || '',
+                        "Complemento": this.resultado.complemento || '',
+                        "Bairro": this.resultado.bairro || '',
+                        "Município": this.resultado.municipio || '',
+                        "UF": this.resultado.uf || '',
+                        "CEP": this.resultado.cep || '',
+                        "Telefone 1": (this.resultado.ddd_telefone_1 ? `(${this.resultado.ddd_telefone_1}) ${this.resultado.telefone_1}` : ''),
+                        "Telefone 2": (this.resultado.ddd_telefone_2 ? `(${this.resultado.ddd_telefone_2}) ${this.resultado.telefone_2}` : ''),
+                        "E-mail": this.resultado.email || '',
+                    };
+                },
+                gerarPDF() {
+                    let doc = new window.jspdf.jsPDF();
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(16);
+                    doc.text(`Consulta CNPJ - ${this.dadosFormatados()["Razão Social"] || ''}`, 10, 16);
+                    doc.setFontSize(10);
+                    let y = 30;
+                    for (const [campo, valor] of Object.entries(this.dadosFormatados())) {
+                        doc.text(`${campo}: ${valor}`, 10, y);
+                        y += 8;
+                        if (y > 270) { doc.addPage(); y = 16; }
+                    }
+                    doc.save(`CNPJ_${this.resultado.cnpj}.pdf`);
+                }
+            }))
+        })
     </script>
 
-    <link id="heading-font" rel="stylesheet" type="text/css"
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800;900&display=swap"
-          media="all"/>
+    <div class="">
 
-    <link rel="stylesheet" href="libraries/flowbite/flowbite.css" />
+        <div class="py-16 text-center max-w-7xl mx-auto">
 
-    <link rel="stylesheet" href="styles/tailwind.css"/>
+            <h1 class="text-4sm font-semibold">Código e Conteúdo</h1>
 
-    <link rel="stylesheet" href="libraries/aos/aos.css"/>
-</head>
-
-<body class="font-body antialiased text-[#000000] bg-[#fcfcfc] dark:text-[#ffffff] dark:bg-[#031022]">
-
-<section class="w-full shadow dark:shadow-slate-800">
-
-    <div class="container flex items-center justify-between mx-auto overflow-hidden font-medium max-w-7xl h-16 px-4 md:overflow-visible md:flex-row md:justify-around lg:justify-center">
-
-        <div class="items-start justify-center w-full space-x-6 text-center text-sm hidden md:w-2/3 md:mt-0 md:flex-row md:items-center md:flex md:justify-start lg:space-x-8">
-
-            <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 md:text-center md:text-primary-500 lg:mx-3"
-               href="index.html">Página Inicial</a>
+            <p class="w-4/5 mx-auto my-4 md:w-3/5 lg:w-2/5">
+                Código e Conteúdo é um projeto de estudos, desenvolvimento e tecnologia, mantido com dedicação por <a href="https://gabrielsouza.dev.br" target="_blank">@gsdesenvolvedor</a>.
+            </p>
 
         </div>
 
-        <div class="flex items-center justify-start h-full pr-4 md:w-2/3 md:justify-center md:pr-0">
-            <a class="py-4 flex md:py-0" href="/">
-                <img style="width: 260px" src="media/logo.png" alt="Consulta Fácil CNPJ"/>
-            </a>
-        </div>
+        <div class="text-center py-1 max-w-7xl mx-auto border-t border-gray-200 dark:border-gray-600">
 
-        <div class="items-start justify-center w-full space-x-6 text-center text-sm hidden md:w-2/3 md:mt-0 md:flex-row md:items-center md:flex md:justify-end lg:space-x-8">
-            <a class="inline-block w-full py-2 mx-0 ml-6 font-medium text-left md:ml-0 md:w-auto md:px-0 md:mx-2 lg:mx-3 md:text-center"
-               href="mailto:contato@codigoeconteudo.com.br">Entrar em Contato</a>
-        </div>
+            <p class="w-4/5 mx-auto my-5 text-sm leading-5">
+                Nenhum dado pessoal é coletado ou armazenado.
+                <br>
+                Este site é um projeto de estudos e não tem fins lucrativos.
+                <br>
+                Utilizamos a API do <a href="https://docs.minhareceita.org/" target="_blank">Minha Receita</a> para consulta de CNPJ.
+            </p>
 
-    </div>
-
-</section>
-
-<section class="">
-
-    <div class="container px-6 py-16 mx-auto text-center md:py-20 xl:py-28">
-
-        <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
-
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-white md:text-4xl xl:text-5xl">Consulta CNPJs de modo
-                simples e rápido.</h1>
-
-            <p class="mt-6 xl:max-w-lg xl:mx-auto">Aqui você pode consultar informações do Cadastro Nacional de Pessoas
-                Jurídicas direto da base governamental, gratuitamente e de modo simples e rápido.</p>
-
-            <div class="w-full max-w-sm mx-auto mt-6 bg-transparent border rounded-global dark:border-gray-700 xl:max-w-md">
-
-                <div class="flex flex-col md:flex-row">
-
-                    <input class="flex-1 h-10 px-4 py-2 m-1 placeholder-gray-400 bg-transparent border-none appearance-none focus:outline-none focus:placeholder-transparent focus:ring-0"
-                           id="cnpj_input" placeholder="Insira o CNPJ "/>
-
-                    <button id="consulta"
-                            class="h-10 px-4 py-2 m-1 text-white transition-colors duration-200 transform bg-primary-500 rounded-global hover:bg-primary-300 focus:outline-none focus:bg-primary-400">
-                        Consultar
-                    </button>
-
-                </div>
-
-            </div>
+            <p class="w-4/5 mx-auto my-5 text-sm leading-5"> 
+                @ 2022 Todos os direitos reservados ao Código e Conteúdo.
+            </p>
 
         </div>
 
     </div>
 
-</section>
+    <script src="libraries/flowbite/flowbite.js"></script>
 
-<section class="hidden" id="section">
+    <script defer src="libraries/alpinejs/alpine.js"></script>
 
-    <div class="container px-4 py-8 mx-auto text-center md:py-10 xl:py-18">
+    <script src="libraries/aos/aos.js"></script>
 
-        <div class="max-w-lg mx-auto md:max-w-2xl xl:max-w-3xl">
+    <script>
+        AOS.init({
+            offset: 50,
+            duration: 800
+        });
+    </script>
 
-            <div id="resultado">
-
-                <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
-
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-
-                        <thead class="text-xs text-white uppercase bg-primary-500 dark:bg-gray-700 dark:text-gray-400">
-
-                            <tr>
-                                <th scope="col" class="py-3 px-6">
-                                    Item
-                                </th>
-                                <th scope="col" class="py-3 px-6">
-                                    Valor
-                                </th>
-                            </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    CNPJ
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="cnpj"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Razão Social
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="razao_social"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Nome Fantasia
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="nome_fantasia"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Logradouro
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="logradouro"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Número
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="numero"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Complemento
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="complemento"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Bairro
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="bairro"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Município
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="municipio"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    UF
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="uf"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    CEP
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="cep"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Telefone 1
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="ddd_telefone_1"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Telefone 2
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="ddd_telefone_2"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    E-mail
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="email"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Porte
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="porte"></span>
-                                </td>
-
-                            </tr>
-
-                            <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-
-                                <td class="py-4 px-6 font-bold">
-                                    Natureza Jurídica
-                                </td>
-
-                                <td class="py-4 px-6">
-                                    <span id="natureza_juridica"></span>
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<div class="">
-
-    <div class="py-16 text-center max-w-7xl mx-auto">
-
-        <h1 class="text-4sm font-semibold">Código e Conteúdo</h1>
-
-        <p class="w-4/5 mx-auto my-4 md:w-3/5 lg:w-2/5">
-            Código e Conteúdo é um projeto de estudos, desenvolvimento e tecnologia, mantido com dedicação por <a href="https://gabrielsouza.dev.br" target="_blank">@gsdesenvolvedor</a>.
-        </p>
-
-    </div>
-
-    <div class="text-center py-1 max-w-7xl mx-auto border-t border-gray-200 dark:border-gray-600">
-
-        <p class="w-4/5 mx-auto my-5 text-sm leading-5">
-            Nenhum dado pessoal é coletado ou armazenado.
-            <br>
-            Este site é um projeto de estudos e não tem fins lucrativos.
-            <br>
-            Utilizamos a API do <a href="https://docs.minhareceita.org/" target="_blank">Minha Receita</a> para consulta de CNPJ.
-        </p>
-
-        <p class="w-4/5 mx-auto my-5 text-sm leading-5"> 
-            @ 2022 Todos os direitos reservados ao Código e Conteúdo.
-        </p>
-
-    </div>
-
-</div>
-
-<script src="libraries/flowbite/flowbite.js"></script>
-
-<script defer src="libraries/alpinejs/alpine.js"></script>
-
-<script src="libraries/aos/aos.js"></script>
-
-<script>
-    AOS.init({
-        offset: 50,
-        duration: 800
-    });
-</script>
-
-<script src="scripts/core.js"></script>
+    <script src="scripts/core.js"></script>
 
 </body>
-
 </html>
